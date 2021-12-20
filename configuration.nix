@@ -7,45 +7,21 @@
 {
   imports =
     [ 
-      ./hardware-configuration.nix
-      ./nvidia-configuration.nix
+      ./hardware.nix
+      ./boot.nix
+      ./i18n.nix
+      ./networking.nix
+      ./cron.nix
+      ./users.nix
     ];
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.firefox.enableGnomeExtensions = true;
+
   
-  ## Kernel
-  boot.kernelPackages = pkgs.linuxPackages_xanmod;
-  # boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelModules = [ "binder-linux" ];
-  #boot.extraModprobeConfig = ''
-  #   options binder_linux devices=binder,hwbinder,vndbinder
-  #'';
-
-  ## Boot Loader
-  ### Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot";
-  ### Grub
-  # boot.loader.grub.version = 2;
-  # boot.loader.grub.devices = [ "nodev" ];
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.useOSProber = true;
-
   ###################
   ## System Options #
   ###################
-  ### Setup time
-  time.timeZone = "Europe/Zurich";
-  time.hardwareClockInLocalTime = true;
-
-  ### Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "fr_CH-latin1";
-  };
 
   ### Setup default fonts
   fonts.fonts = with pkgs; [
@@ -60,14 +36,6 @@
       ]; 
     })
   ];
-
-  ###################
-  ## Audio          #
-  ###################
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-  ### Explicit PulseAudio support in applications
-  # nixpkgs.config.pulseaudio = true;
 
   ##########################
   ## X11 windowing system. #
@@ -91,6 +59,7 @@
   ### GNOME Desktop Environment. #
   ################################
   services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.desktopManager.xterm.enable = false;
   services.xserver.displayManager.gdm = {
     enable = true;
     wayland = true;
@@ -110,6 +79,7 @@
   ## Programs - SUID wrappers #
   #############################
   programs.steam.enable = true;
+
   programs.zsh = {
     enable = true;
     # ohMyZsh = {
@@ -121,6 +91,7 @@
     # promptInit = "source ${pkgs.zsh-powerlevel9k}/share/zsh-powerlevel9k/powerlevel9k.zsh-theme"`
   };
 
+
   ###################
   ## Environment    #
   ###################
@@ -130,8 +101,15 @@
 
     ### Additional Packages
     systemPackages = with pkgs; [ 
-      htop dig wget git
-      pciutils inxi glxinfo
+      htop killall dig wget git micro 
+      wl-clipboard xclip
+      #ledger-udev-rules
+      #tpmmanager tmuxPlugins.sensible 
+      #tmuxPlugins.resurrect tmuxPlugins.dracula
+      #tmuxPlugins.yank tmuxPlugins.jump
+      #tmuxPlugins.sidebar tmux-mem-cpu-load
+      # tmuxPlugins.ctrlw 
+
       firefox-wayland
 
       #### Gnome
@@ -170,54 +148,9 @@
   ###################
   ## Virtualisation #
   ###################
-  virtualisation.docker.enable = true;
-  virtualisation.waydroid.enable = true;
+  #virtualisation.docker.enable = true;
+  #virtualisation.waydroid.enable = true;
   # virtualisation.libvirtd.enable = true;
-
-  ###################
-  ## Users          #
-  ###################
-
-  users = {
-    ### Define a user account. Don't forget to set a password with ‘passwd’.
-    users.vincent = {
-      uid = 1000;
-      name = "vincent";
-      isNormalUser = true;
-      extraGroups = [ "wheel" ]; # wheel will enable ‘sudo’ for the user.
-    };
-
-    extraUsers.vincent = {
-      extraGroups = [ 
-        "networkmanager" "audio" "video" "docker" 
-      ];
-      shell = pkgs.zsh;
-      # packages = with pkgs; [ vlc bitwarden keepassxc ];
-    };   
-  };
-
-  ###################
-  ## Networking     #
-  ###################
-  networking.hostName = "zbf14"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  ### The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  ### Per-interface useDHCP will be mandatory in the future, so this generated config
-  ### replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.wlo1.useDHCP = true;
-  ## Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  ###################
-  ## Firewall       #
-  ###################
-  ## Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  ## Or disable the firewall altogether.
-  networking.firewall.enable = true;
 
   ###################
   ## NixOS Release  #
