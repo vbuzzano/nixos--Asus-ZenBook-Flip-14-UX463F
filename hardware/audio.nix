@@ -1,6 +1,6 @@
-###################
-## Audio Configs  #
-###################
+###############################
+## HARDWARE | AUDIO PIPEWIRE ##
+###############################
 { pkgs, ... }:
 
 {
@@ -24,7 +24,7 @@
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
-  
+    
   #services.pipewire = {
   #  # Some useful knobs if you want to finetune or debug your setup: 
   #  config.pipewire = {
@@ -70,6 +70,8 @@
 #  };
 
   environment.systemPackages = with pkgs; [ 
+    qjackctl
+    pavucontrol
     alsa-utils
     # need for pipewire ' don't know why
     # cf: https://www.reddit.com/r/NixOS/comments/oaj0of/sound_not_working_alsa_connection_refused/h3jowwr/

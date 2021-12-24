@@ -1,3 +1,6 @@
+#############################
+## Cron configuration      ##
+#############################
 {
   services.cron = {
     enable = true;

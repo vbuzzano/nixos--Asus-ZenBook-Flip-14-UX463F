@@ -7,35 +7,17 @@
 {
   imports =
     [ 
-      ./hardware.nix
+      ./hardware
       ./boot.nix
-      ./i18n.nix
       ./networking.nix
-      ./cron.nix
-      ./users.nix
+      ./system
+      ./virt
+      ./users
+      ./programs
     ];
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.firefox.enableGnomeExtensions = true;
-
-  
-  ###################
-  ## System Options #
-  ###################
-
-  ### Setup default fonts
-  fonts.fonts = with pkgs; [
-    liberation_ttf
-    fira-code
-    roboto
-    (nerdfonts.override { 
-      fonts = [ 
-        "Meslo"
-        "FiraCode" 
-        "DroidSansMono" 
-      ]; 
-    })
-  ];
 
   ##########################
   ## X11 windowing system. #
@@ -48,7 +30,7 @@
     ### Configure keymap in X11
     layout = "ch";
     xkbVariant = "fr";
-    # xkbModel = "fr"; ??
+    xkbModel = "pc105";
     # xkbOptions = "eurosign:e"; ??
 
     ### Enable touchpad support (enabled default in most desktopManager).
@@ -78,18 +60,9 @@
   #############################
   ## Programs - SUID wrappers #
   #############################
-  programs.steam.enable = true;
+  programs.dconf.enable = true;
 
-  programs.zsh = {
-    enable = true;
-    # ohMyZsh = {
-    #   enable = true;
-    #   plugins = [ "git" "man" ];
-    #   theme = "random";
-    #   custom = "~/.oh-my-ssh";
-    # };
-    # promptInit = "source ${pkgs.zsh-powerlevel9k}/share/zsh-powerlevel9k/powerlevel9k.zsh-theme"`
-  };
+  programs.steam.enable = true;
 
 
   ###################
@@ -103,6 +76,8 @@
     systemPackages = with pkgs; [ 
       htop killall dig wget git micro 
       wl-clipboard xclip
+      libgtop
+
       #ledger-udev-rules
       #tpmmanager tmuxPlugins.sensible 
       #tmuxPlugins.resurrect tmuxPlugins.dracula
@@ -111,6 +86,7 @@
       # tmuxPlugins.ctrlw 
 
       firefox-wayland
+      lollypop
 
       #### Gnome
       gnome.gnome-tweaks
@@ -120,6 +96,7 @@
       gnomeExtensions.hibernate-status-button
       gnomeExtensions.dash-to-dock
       gnomeExtensions.bing-wallpaper-changer
+      gnomeExtensions.vitals
       ##### Gnome themes
       dracula-theme
       arc-theme
@@ -127,8 +104,6 @@
       pop-gtk-theme
       #### Icon themes
       arc-icon-theme
-      moka-icon-theme
-      papirus-icon-theme
       pop-icon-theme
     ];
 
@@ -141,14 +116,17 @@
     ## Exclude some gnome packages
     ## > gnome-photos gnome.gnome-music gnome.gnome-terminal gnome.gedit 
     ##   evince gnome.gnome-characters gnome.totem pkgs.gnome-tour
-    gnome.excludePackages = with pkgs; [ epiphany ];
+    gnome.excludePackages = with pkgs; [
+      epiphany
+      gnome.gnome-music
+    ];
   };
 
+  services.flatpak.enable = true;
 
   ###################
   ## Virtualisation #
   ###################
-  #virtualisation.docker.enable = true;
   #virtualisation.waydroid.enable = true;
   # virtualisation.libvirtd.enable = true;
 
