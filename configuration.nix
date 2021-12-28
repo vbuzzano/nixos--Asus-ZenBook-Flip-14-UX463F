@@ -8,7 +8,7 @@
   imports =
     [ 
       ./hardware
-      ./boot.nix
+      ./boot
       ./networking.nix
       ./system
       ./virt
@@ -18,6 +18,10 @@
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.firefox.enableGnomeExtensions = true;
+
+  # Kernel options
+  #boot.kernelPackages = pkgs.linuxPackages_xanmod;
+  #boot.kernelModules = [ "binder-linux" ];
 
   ##########################
   ## X11 windowing system. #
@@ -93,6 +97,7 @@
       gnome.adwaita-icon-theme
       ##### Add some extensions
       gnomeExtensions.appindicator
+      gnomeExtensions.volume-mixer
       gnomeExtensions.hibernate-status-button
       gnomeExtensions.dash-to-dock
       gnomeExtensions.bing-wallpaper-changer
