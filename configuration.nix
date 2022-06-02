@@ -20,8 +20,8 @@
   nixpkgs.config.firefox.enableGnomeExtensions = true;
 
   # Kernel options
-  #boot.kernelPackages = pkgs.linuxPackages_xanmod;
-  #boot.kernelModules = [ "binder-linux" ];
+  boot.kernelPackages = pkgs.linuxPackages_xanmod;
+  boot.kernelModules = [ "binder-linux" ];
 
   ##########################
   ## X11 windowing system. #

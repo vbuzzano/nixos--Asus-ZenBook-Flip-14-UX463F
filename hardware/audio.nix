@@ -13,7 +13,7 @@
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
-    #socketActivation = true;
+    socketActivation = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
@@ -25,21 +25,60 @@
     #media-session.enable = true;
   };
     
-  #services.pipewire = {
-  #  # Some useful knobs if you want to finetune or debug your setup: 
-  #  config.pipewire = {
-  #    "context.properties" = {
-  #      #"link.max-buffers" = 64;
-  #      "link.max-buffers" = 16; # version < 3 clients can't handle more than this
-  #      "log.level" = 2; # https://docs.pipewire.org/page_daemon.html
-  #      #"default.clock.rate" = 48000;
-  #      #"default.clock.quantum" = 1024;
-  #      #"default.clock.min-quantum" = 32;
-  #      #"default.clock.max-quantum" = 8192;
-  #    };
-  #  };
-  #};
-  
+  services.pipewire = {
+    # Some useful knobs if you want to finetune or debug your setup: 
+    config.pipewire = {
+      "context.properties" = {
+        "core.daemon" = true;
+        "core.name" = "pipewire-0";
+        #"log.level" = 2; # https://docs.pipewire.org/page_daemon.html
+        "link.max-buffers" = 16;
+        "default.clock.allowed-rates" = [ 44100 48000 ];
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 1024;
+        "default.clock.min-quantum" = 256;
+        "default.clock.max-quantum" = 4096; # 8192
+        "vm.overrides" = {
+          "default.clock.min-quantum" = 1024;
+        };
+      };
+    };
+
+    #media-session.config.alsa-monitor.rules = [
+    #  { 
+    #    "actions" = {
+    #      "update-props" = {
+    #        "api.acp.auto-port" = false;
+    #        "api.acp.auto-profile" = false;
+    #        "api.alsa.use-acp" = true;
+    #        "api.alsa.headroom" = 0;
+    #        "api.alsa.period-size" = 256;
+    #      };
+    #    };
+    #    "matches" = [
+    #      {
+    #        "device.name" = "~alsa_card.*";
+    #      }
+    #    ];
+    #  }
+    #  {
+    #    "actions" = {
+    #      "update-props" = {
+    #        "node.pause-on-idle" = false;
+    #      };
+    #    };
+    #    "matches" = [
+    #      {
+    #        "node.name" = "~alsa_input.*";
+    #      }
+    #      {
+    #        "node.name" = "~alsa_output.*";
+    #      }
+    #    ];
+    #  }
+    #];
+
+  };
 #  service.pipewire = 
 #    media-session.config.bluez-monitor.rules = [
 #      {
